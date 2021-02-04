@@ -8,10 +8,13 @@ COPY src/api /go/src/api
 WORKDIR /go/src/api/
 # docker ** という命令を行うディレクトリを指定
  
+RUN go env -w GO111MODULE=on
+# $GOPATHの外で開発できるように設定
+
 RUN go get -u github.com/gin-gonic/gin \ 
   && go get github.com/jinzhu/gorm \
   && go get github.com/go-sql-driver/mysql \
-  && brew install mariadb-client 
+  && apt-get update && apt-get install -y mariadb-client
 # DockerImageをビルドする際にコンテナ内で実行されるコマンド
 # 必要なモノを諸々コンテナ内に取り込む
 

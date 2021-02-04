@@ -1,6 +1,6 @@
 package main
 
-import (
+import(
     "github.com/gin-gonic/gin"
     _ "github.com/jinzhu/gorm/dialects/mysql"
 )
