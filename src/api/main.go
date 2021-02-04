@@ -2,7 +2,8 @@ package main
 
 import(
     "github.com/gin-gonic/gin"
-    _ "github.com/jinzhu/gorm/dialects/mysql"
+    "github.com/jinzhu/gorm"
+    _ "github.com/go-sql-driver/mysql"
 )
 
 func main() {

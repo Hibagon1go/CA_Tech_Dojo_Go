@@ -8,7 +8,8 @@ COPY src/api /go/src/api
 WORKDIR /go/src/api/
 # docker ** という命令を行うディレクトリを指定
  
-RUN go env -w GO111MODULE = auto
+RUN go env -w GO111MODULE = auto \
+  && go env -w GOSUMDB = off
 # $GOPATHの外で開発できるように設定
 
 RUN go get -u github.com/gin-gonic/gin \ 

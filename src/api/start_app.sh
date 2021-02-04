@@ -5,4 +5,5 @@ until mysqladmin ping -h mysql -P 3306 --silent; do
 done
 
 echo "app is starting...!"
+#exec go mod init modファイルがない場合のみ実行
 exec go run main.go
