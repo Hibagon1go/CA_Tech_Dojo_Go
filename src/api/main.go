@@ -31,7 +31,7 @@ func DBConnect() *gorm.DB {
     DBMS := "mysql"
     USER := "root"
     PASS := "password"
-    PROTOCOL := "tcp(mysql:3306)"  ← ここのmysqlはサービス名です
+    PROTOCOL := "tcp(mysql:3306)" 
     DBNAME := "sample"
     CONNECT := USER + ":" + PASS + "@" + PROTOCOL + "/" + DBNAME + "?parseTime=true"
     db, err := gorm.Open(DBMS, CONNECT)
