@@ -5,5 +5,8 @@ until mysqladmin ping -h mysql -P 3306 --silent; do
 done
 
 echo "app is starting...!"
-#exec go mod init modファイルがない場合のみ実行
+if [ ! -e "go.mod" ]; then
+  exec go mod init # go.modファイルが無ければgo.modファイルを作成し、初期化
+fi
+
 exec go run main.go
