@@ -34,18 +34,21 @@ func DBConnect() *gorm.DB {
 
 func UserCreate(c *gin.Context){
 	db := DBMigrate(DBConnect()) 
-	name := c.Param("name")
-	user := model.User{Name: name}
-	err := c.Bind(&user)
-	if err != nil{
-		c.String(http.StatusBadRequest, "Request is failed: "+err.Error())
+	var user model.User
+	if err := c.ShouldBindJSON(&user); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	db.NewRecord(&user)
+    if err := db.Create(&user).Error; err != nil {
+        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	}
+
 	db.Create(&user)
-    c.JSON(200, gin.H{
+
+	c.JSON(200, gin.H{
+		"name": user.Name,
 		"token" : "Yotto0416",
 	})
+	
 }
-
