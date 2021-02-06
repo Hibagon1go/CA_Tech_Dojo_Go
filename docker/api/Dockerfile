@@ -16,6 +16,7 @@ RUN go env -w GO111MODULE=on \
 RUN go get -u github.com/gin-gonic/gin \ 
   && go get github.com/jinzhu/gorm \
   && go get github.com/go-sql-driver/mysql \
+  && go get github.com/dgrijalva/jwt-go \
   && apt-get update && apt-get install -y mariadb-client
 # DockerImageをビルドする際にコンテナ内で実行されるコマンド
 # 必要なモノを諸々コンテナ内に取り込む

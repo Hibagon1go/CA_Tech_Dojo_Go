@@ -24,3 +24,11 @@ services:
     volumes:
       - ./docker/db/conf.d:/etc/mysql/conf.d
       - ./log/mysql:/var/log/mysql
+  swagger:
+    image: swaggerapi/swagger-editor
+    environment:
+      API_URL: ./docker/swagger/swagger-editor.yml
+    ports:
+      - "8081:8080"
+
+

@@ -4,51 +4,58 @@ package controller
 
 import (
 	"github.com/gin-gonic/gin"
-    "github.com/jinzhu/gorm"
-    _ "github.com/go-sql-driver/mysql"
-	"net/http"
-	"api/model"
+    "github.com/dgrijalva/jwt-go"
+    "net/http"
+    "log"
+    "api/database"
+    "api/middleware"
+    "api/model"
 )
 
-// dbにテーブルが無い時は自動生成し、dbを返す
-func DBMigrate(db *gorm.DB) *gorm.DB {
-    db.AutoMigrate(&model.User{})
-    return db
-}
-
-// dbに接続し、そのdbを返す
-func DBConnect() *gorm.DB {
-    // 接続先のdbの情報を入力(docker-compose.ymlで定義された)
-    DBMS := "mysql"
-    USER := "root"
-    PASS := "password"
-    PROTOCOL := "tcp(mysql:3306)" 
-    DBNAME := "sample"
-    CONNECT := USER + ":" + PASS + "@" + PROTOCOL + "/" + DBNAME + "?parseTime=true" 
-    db, err := gorm.Open(DBMS, CONNECT) //データベースに接続
-    if err != nil {
-        panic(err.Error())
-    }
-    return db
-}
-
-func UserCreate(c *gin.Context){
-	db := DBMigrate(DBConnect()) 
-	var user model.User
+func CreateUser(c *gin.Context){
+    db := database.DBMigrate(database.DBConnect()) 
+    var user model.User
+    // c.ShouldBindJSON(&user)で、POSTされたJSONをuserにキャスト
 	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
-	}
+    }
 
+    token := CreateToken(user)
+    user.Token = token 
+
+    // db.Createによりdbにuserを登録
     if err := db.Create(&user).Error; err != nil {
-        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+        log.Fatal(err)
 	}
-
-	db.Create(&user)
 
 	c.JSON(200, gin.H{
-		"name": user.Name,
-		"token" : "Yotto0416",
+		"token" : token,
 	})
 	
+}
+
+// JWTによりtoken作成
+func CreateToken(user model.User)(string) {
+    var secret string
+    token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims {
+        "name": user.Name,
+        "iss": "Y.H", // JWTの発行者が入る
+    })
+
+    tokenString, err := token.SignedString([]byte(secret))
+    if err != nil {
+        log.Fatal(err)
+    }
+
+    return tokenString
+}
+
+func GetUser(c *gin.Context){
+    is_Auth, user := middleware.Authorization(c)
+    if is_Auth {
+        c.JSON(200, gin.H{
+            "name" : user.Name,
+        })
+    }
 }

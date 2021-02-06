@@ -1,8 +1,9 @@
-// テーブルの定義
+// dbの内容定義
 
 package model
 
-// テーブルを定義
+// Userテーブルを定義
 type User struct {
     Name string `json:"name"`
+    Token string `json:"token"`
 }

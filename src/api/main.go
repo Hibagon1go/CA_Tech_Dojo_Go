@@ -11,13 +11,13 @@ func main() {
     userEngine := engine.Group("/user")
     {
         // controllerへリクエストを振る
-        userEngine.POST("/create", controller.UserCreate) 
-        //userEngine.GET("/get", controller.UserGet)
+        userEngine.POST("/create", controller.CreateUser) 
+        userEngine.GET("/get", controller.GetUser)
         //userEngine.PUT("/update", controller.UserUpdate)
 
     }
 
-    engine.Run(":8080")
+    engine.Run(":8080") // localhost:8080でサーバー走らせる
 }
 
 
