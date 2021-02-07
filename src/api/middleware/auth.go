@@ -1,3 +1,5 @@
+// 認証のためのミドルウェア
+
 package middleware
 
 import (
@@ -19,7 +21,7 @@ func Authorization(c *gin.Context) (is_Auth bool, user model.User){
 	
 	db.First(&user, "token=?", token) // x-tokenと一致するtokenを持つレコードをuserに格納させる
 	if user.Name == "" {
-		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"response": "No such user."})
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"response": "Such user does not exit."})
 		return is_Auth, user	
 	}
 	is_Auth = true

@@ -1,4 +1,4 @@
-// main.goから振られたリクエストをserviceに割り振り、レスポンスを返す
+// main.goから振られた、ユーザーに関するリクエストを実行する機能
 
 package controller
 
@@ -13,11 +13,20 @@ import (
 )
 
 func CreateUser(c *gin.Context){
-    db := database.DBMigrate(database.DBConnect()) 
-    var user model.User
+    db := database.DBConnect()
+    var user model.User // POSTされたユーザー情報を入れる構造体
+    var check_already_exist model.User // POSTされたユーザー情報が既に存在するか確認するための構造体
+
     // c.ShouldBindJSON(&user)で、POSTされたJSONをuserにキャスト
 	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+    }
+    
+    // dbに既に同じ名前のuserが存在したら登録不可
+	db.First(&check_already_exist, "name=?", user.Name)
+    if check_already_exist.Name != "" {
+		c.JSON(http.StatusBadRequest, gin.H{"response": "Such username is already used."})
 		return
     }
 
@@ -58,4 +67,23 @@ func GetUser(c *gin.Context){
             "name" : user.Name,
         })
     }
+}
+
+func UpdateUser(c *gin.Context){
+    db := database.DBConnect()
+    is_Auth, before_user := middleware.Authorization(c)
+    var after_user model.User
+    // c.ShouldBindJSON(&after_user)で、PUTされたJSONをafter_userにキャスト
+    if is_Auth {
+        if err := c.ShouldBindJSON(&after_user); err != nil {
+            c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+            return
+        }
+
+        var tmp model.User 
+        db.First(&tmp, "name=?", before_user.Name) // 更新前のユーザー情報をdbから受取りtmpに入れる
+        tmp.Name = after_user.Name // tmpのNameを更新する
+        db.Delete(&before_user) // 更新前のユーザーをdbから消去
+        db.Save(&tmp) // 更新後のユーザーをdbにセーブ
+    } 
 }
