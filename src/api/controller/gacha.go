@@ -30,6 +30,8 @@ func Do_Gacha(c *gin.Context) {
 		}
 	}
 
+	user_characters := []model.UserCharacter{}
+	results := []map[string]string{}
 	for i := 0; i < times.Times; i++ {
 		picked_character := PickupCharacter() // characterを抽選
 
@@ -37,16 +39,19 @@ func Do_Gacha(c *gin.Context) {
 		result["characterID"] = picked_character.CharacterID
 		result["name"] = picked_character.CharacterName
 
+		var user_character model.UserCharacter
 		// 抽選されたcharacter情報をuserの所持characterテーブルに保存
 		rand.Seed(time.Now().UnixNano())
-		user.UserCharacter.UserCharacterID = strconv.Itoa(rand.Intn(100000000)) // db内でユニークなID生成したいが、桁数の大きいrandom数で代用
-		user.UserCharacter.CharacterID = picked_character.CharacterID
-		user.UserCharacter.Value = picked_character.Value
+		user_character.UserCharacterID = strconv.Itoa(rand.Intn(100000000)) // db内でユニークなID生成したいが、桁数の大きいrandom数で代用
+		user_character.CharacterID = picked_character.CharacterID
+		user_character.Value = picked_character.Value
 
-		db.Save(&user)
-
-		c.JSON(http.StatusOK, gin.H{"results": result})
+		user_characters = append(user_characters, user_character)
+		results = append(results, result)
 	}
+
+	db.Model(&user).Update("user_characters", user_characters)
+	c.JSON(http.StatusOK, gin.H{"results": results})
 	return
 }
 
@@ -56,7 +61,7 @@ func PickupCharacter() (picked_character model.Character) {
 	box := CharacterBox()
 	rand.Seed(time.Now().UnixNano())
 	characterID := box[rand.Intn(100)]
-	db.First(&picked_character, "characterID=?", characterID)
+	db.First(&picked_character, "character_id=?", characterID)
 	picked_character.Value = rand.Intn(10000) // 抽選されたcharacterにランダムで"価値"を付与
 
 	return picked_character

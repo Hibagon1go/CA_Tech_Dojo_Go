@@ -4,8 +4,8 @@ package model
 
 // Userテーブルを定義
 type User struct {
-	Name     string `db:"name, primarykey" json:"name"`
-	Token    string `json:"token"`
-	RandomID string `json:"randomID"`
-	UserCharacter
+	Name           string          `gorm:"primarykey" json:"name"`
+	Token          string          `json:"token"`
+	RandomID       string          `json:"randomID"`
+	UserCharacters []UserCharacter `gorm:"foreignKey:UserCharacterID"`
 }

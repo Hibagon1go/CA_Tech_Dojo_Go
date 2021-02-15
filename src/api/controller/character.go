@@ -47,7 +47,8 @@ func CharacterBox() (box [100]string) {
 	idx := 0
 
 	for id := 1; id < 5; id++ {
-		db.First(&character, "characterID=?", strconv.Itoa(id))
+		s := strconv.Itoa(id)
+		db.First(&character, "character_id=?", s)
 		for i := 0; i < character.Probability; i++ {
 			box[idx+i] = character.CharacterID
 		}

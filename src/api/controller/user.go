@@ -65,6 +65,7 @@ func UpdateUser(c *gin.Context) {
 	db := database.DBConnect()
 	is_Auth, before_user := middleware.Authorization(c) // まず認証を実行
 	var after_user model.User
+	var check_already_exist model.User
 	// c.ShouldBindJSON(&after_user)で、PUTされたJSONをafter_userにキャスト
 	if is_Auth {
 		if err := c.ShouldBindJSON(&after_user); err != nil {
@@ -72,10 +73,13 @@ func UpdateUser(c *gin.Context) {
 			return
 		}
 
-		tmp := before_user
-		before_user.Name = after_user.Name // userのNameを更新する
-		db.Delete(&tmp)
-		db.Save(&before_user) // 更新後のユーザーをdbにセーブ
+		// dbに既に同じ名前のuserが存在したら登録不可
+		db.First(&check_already_exist, "name=?", after_user.Name)
+		if check_already_exist.Name != "" {
+			c.JSON(http.StatusMethodNotAllowed, gin.H{"response": "This username is already used."})
+			return
+		}
+		db.Model(&before_user).Update("name", after_user.Name) // dbのUserNameをupdate
 	}
 }
 

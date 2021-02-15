@@ -12,7 +12,7 @@ type Character struct {
 
 // Userの所持するCharacterテーブルを定義
 type UserCharacter struct {
-	UserCharacterID string `db:"userCharacterID, primarykey" json:"userCharacterID"`
+	UserCharacterID string `gorm:"primarykey" json:"userCharacterID"`
 	CharacterID     string `json:"characterID"`
 	Value           int    `json:"value"`
 }
