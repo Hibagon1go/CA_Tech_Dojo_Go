@@ -4,7 +4,9 @@ package controller
 
 import (
 	"api/database"
+	"api/middleware"
 	"api/model"
+	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -58,12 +60,19 @@ func CharacterBox() (box [100]string) {
 }
 
 func Character_List(c *gin.Context) {
+	is_Auth, user := middleware.Authorization(c) // まず認証を実行
+	if is_Auth {
+		// userの中の所持character情報を全て取り出す
+		character_lists := []map[string]string{}
+		for i := 0; i < len(user.UserCharacters); i++ {
+			character_list := map[string]string{"userCharacterID": "", "characterID": "", "name": ""} // response用のマップ
+			character_list["userCharacterID"] = user.UserCharacters[i].UserCharacterID
+			character_list["characterID"] = user.UserCharacters[i].CharacterID
+			character_list["name"] = user.UserCharacters[i].CharacterName
+			character_lists = append(character_lists, character_list)
+		}
 
-	/*
-	  cからShouldBindJsonとかでx-token,timesを受け取る
-	  x-tokenで認証
-	  userの所持キャラクターを返す
-	*/
+		c.JSON(http.StatusOK, gin.H{"characters": character_lists})
+	}
 	return
-
 }

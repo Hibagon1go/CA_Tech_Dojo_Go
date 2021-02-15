@@ -30,7 +30,7 @@ func Do_Gacha(c *gin.Context) {
 		}
 	}
 
-	user_characters := []model.UserCharacter{}
+	user_characters := user.UserCharacters
 	results := []map[string]string{}
 	for i := 0; i < times.Times; i++ {
 		picked_character := PickupCharacter() // characterを抽選
