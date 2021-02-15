@@ -1,8 +1,6 @@
 version: '3'
 services:
   api:
-    links:
-      - mysql 
     build:
       context: . 
       dockerfile: ./docker/api/Dockerfile
@@ -10,6 +8,8 @@ services:
       - "8080:8080"
     volumes:
       - ./src/api:/go/src/api
+    networks: 
+      - my_network
   mysql:
     build: ./docker/db
     image: mysql:5.7
@@ -24,11 +24,20 @@ services:
     volumes:
       - ./docker/db/conf.d:/etc/mysql/conf.d
       - ./log/mysql:/var/log/mysql
+    networks: 
+      - my_network
   swagger:
     image: swaggerapi/swagger-editor
     environment:
       API_URL: ./docker/swagger/swagger-editor.yml
     ports:
       - "8081:8080"
+    networks: 
+      - my_network
+
+networks:
+  my_network:
+
+  
 
 

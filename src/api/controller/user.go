@@ -6,10 +6,11 @@ import (
 	"api/database"
 	"api/middleware"
 	"api/model"
+	"crypto/rand"
+	"errors"
 	"log"
 	"net/http"
 
-	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 )
 
@@ -31,7 +32,13 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	token := CreateToken(user)
+	randomID, err := MakeRandomStr(32)
+	if err != nil {
+		log.Fatal(err)
+	}
+	user.RandomID = randomID // 各ユーザーに固有のランダムな文字列をuserの情報に追加
+
+	token := middleware.CreateToken(user)
 	user.Token = token
 
 	// db.Createによりdbにuserを登録
@@ -43,22 +50,6 @@ func CreateUser(c *gin.Context) {
 		"token": token,
 	})
 
-}
-
-// JWTによりtoken作成
-func CreateToken(user model.User) string {
-	var secret string
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"name": user.Name,
-		"iss":  "Y.H", // JWTの発行者が入る
-	})
-
-	tokenString, err := token.SignedString([]byte(secret))
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return tokenString
 }
 
 func GetUser(c *gin.Context) {
@@ -81,10 +72,28 @@ func UpdateUser(c *gin.Context) {
 			return
 		}
 
-		var tmp model.User
-		db.First(&tmp, "name=?", before_user.Name) // 更新前のユーザー情報をdbから受取りtmpに入れる
-		tmp.Name = after_user.Name                 // tmpのNameを更新する
-		db.Delete(&before_user)                    // 更新前のユーザーをdbから消去
-		db.Save(&tmp)                              // 更新後のユーザーをdbにセーブ
+		tmp := before_user
+		before_user.Name = after_user.Name // userのNameを更新する
+		db.Delete(&tmp)
+		db.Save(&before_user) // 更新後のユーザーをdbにセーブ
 	}
+}
+
+// ランダムな文字列生成
+func MakeRandomStr(digit uint32) (string, error) {
+	const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+
+	// 乱数を生成
+	b := make([]byte, digit)
+	if _, err := rand.Read(b); err != nil {
+		return "", errors.New("unexpected error...")
+	}
+
+	// letters からランダムに取り出して文字列を生成
+	var result string
+	for _, v := range b {
+		// index が letters の長さに収まるように調整
+		result += string(letters[int(v)%len(letters)])
+	}
+	return result, nil
 }

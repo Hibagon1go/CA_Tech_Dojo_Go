@@ -1,9 +1,11 @@
-// dbの内容定義
+// User周りのdbの内容定義
 
 package model
 
 // Userテーブルを定義
 type User struct {
-    Name string `json:"name"`
-    Token string `json:"token"`
+	Name     string `db:"name, primarykey" json:"name"`
+	Token    string `json:"token"`
+	RandomID string `json:"randomID"`
+	UserCharacter
 }

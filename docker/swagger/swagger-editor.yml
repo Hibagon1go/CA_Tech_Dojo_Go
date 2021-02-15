@@ -7,7 +7,7 @@ info:
   ローカル環境で起動中のAPIにAPIリクエストをするこ とができます。"
   version: "1.0.0"
   title: "TechTrain MISSION Game API"
-host: "localhost:8080"
+host: "8080:api"
 tags:
   - name: "user"
     description: "ユーザ関連API"
