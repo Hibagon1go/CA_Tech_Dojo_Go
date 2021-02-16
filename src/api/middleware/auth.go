@@ -58,7 +58,7 @@ func Authorization(c *gin.Context) (is_Auth bool, user model.User) {
 		log.Fatal(err)
 	}
 	*/
-	db.First(&user, "token=?", x_token) // x-tokenと一致するtokenを持つレコードをuserに格納させる
+	db.Preload("UserCharacter").First(&user, "token=?", x_token) // x-tokenと一致するtokenを持つレコードをuserに格納させる
 
 	// 与えられたx-tokenを持つuserが存在しないなら認証失敗
 	if user.Name == "" {

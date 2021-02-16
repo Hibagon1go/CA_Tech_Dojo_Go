@@ -42,6 +42,7 @@ func Do_Gacha(c *gin.Context) {
 		var user_character model.UserCharacter
 		// 抽選されたcharacter情報をuserの所持characterテーブルに保存
 		rand.Seed(time.Now().UnixNano())
+		user_character.CharacterName = picked_character.CharacterName
 		user_character.UserCharacterID = strconv.Itoa(rand.Intn(100000000)) // db内でユニークなID生成したいが、桁数の大きいrandom数で代用
 		user_character.CharacterID = picked_character.CharacterID
 		user_character.Value = picked_character.Value
