@@ -20,6 +20,7 @@ type Times struct {
 
 func Do_Gacha(c *gin.Context) {
 	db := database.DBConnect()
+	rand.Seed(time.Now().UnixNano())
 	is_Auth, user := middleware.Authorization(c) // まず認証を実行
 	var times Times
 	if is_Auth {
@@ -30,7 +31,7 @@ func Do_Gacha(c *gin.Context) {
 		}
 	}
 
-	user_characters := user.UserCharacters
+	// user_characters := user.UserCharacters
 	results := []map[string]string{}
 	for i := 0; i < times.Times; i++ {
 		picked_character := PickupCharacter() // characterを抽選
@@ -40,18 +41,17 @@ func Do_Gacha(c *gin.Context) {
 		result["name"] = picked_character.CharacterName
 
 		var user_character model.UserCharacter
+		user_character.UserID = user.UserID
 		// 抽選されたcharacter情報をuserの所持characterテーブルに保存
-		rand.Seed(time.Now().UnixNano())
 		user_character.CharacterName = picked_character.CharacterName
 		user_character.UserCharacterID = strconv.Itoa(rand.Intn(100000000)) // db内でユニークなID生成したいが、桁数の大きいrandom数で代用
 		user_character.CharacterID = picked_character.CharacterID
 		user_character.Value = picked_character.Value
 
-		user_characters = append(user_characters, user_character)
+		db.Save(&user_character)
 		results = append(results, result)
 	}
 
-	db.Model(&user).Update("user_characters", user_characters)
 	c.JSON(http.StatusOK, gin.H{"results": results})
 	return
 }

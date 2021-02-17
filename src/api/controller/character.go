@@ -60,15 +60,18 @@ func CharacterBox() (box [100]string) {
 }
 
 func Character_List(c *gin.Context) {
+	db := database.DBConnect()
 	is_Auth, user := middleware.Authorization(c) // まず認証を実行
 	if is_Auth {
-		// userの中の所持character情報を全て取り出す
+		// userに属する所持character情報を全て取り出す
 		character_lists := []map[string]string{}
-		for i := 0; i < len(user.UserCharacters); i++ {
+		var user_characters []model.UserCharacter
+		db.Find(&user_characters, "user_id=?", user.UserID)
+		for i := 0; i < len(user_characters); i++ {
 			character_list := map[string]string{"userCharacterID": "", "characterID": "", "name": ""} // response用のマップ
-			character_list["userCharacterID"] = user.UserCharacters[i].UserCharacterID
-			character_list["characterID"] = user.UserCharacters[i].CharacterID
-			character_list["name"] = user.UserCharacters[i].CharacterName
+			character_list["userCharacterID"] = user_characters[i].UserCharacterID
+			character_list["characterID"] = user_characters[i].CharacterID
+			character_list["name"] = user_characters[i].CharacterName
 			character_lists = append(character_lists, character_list)
 		}
 

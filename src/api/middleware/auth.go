@@ -17,8 +17,8 @@ import (
 func CreateToken(user model.User) string {
 	secret := "secret"
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-		"exp":      time.Now().Add(time.Hour * 1).Unix(),
-		"randomID": user.RandomID,
+		"exp":    time.Now().Add(time.Hour * 1).Unix(),
+		"userID": user.UserID,
 	})
 
 	tokenString, err := token.SignedString([]byte(secret))
@@ -58,7 +58,7 @@ func Authorization(c *gin.Context) (is_Auth bool, user model.User) {
 		log.Fatal(err)
 	}
 	*/
-	db.Preload("UserCharacter").First(&user, "token=?", x_token) // x-tokenと一致するtokenを持つレコードをuserに格納させる
+	db.First(&user, "token=?", x_token) // x-tokenと一致するtokenを持つレコードをuserに格納させる
 
 	// 与えられたx-tokenを持つuserが存在しないなら認証失敗
 	if user.Name == "" {

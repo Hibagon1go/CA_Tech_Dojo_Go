@@ -32,11 +32,11 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	randomID, err := MakeRandomStr(32)
+	userID, err := MakeRandomStr(32)
 	if err != nil {
 		log.Fatal(err)
 	}
-	user.RandomID = randomID // 各ユーザーに固有のランダムな文字列をuserの情報に追加
+	user.UserID = userID // 各ユーザーに固有のランダムな文字列をuserの情報に追加
 
 	token := middleware.CreateToken(user)
 	user.Token = token

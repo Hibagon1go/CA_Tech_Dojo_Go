@@ -6,6 +6,6 @@ package model
 type User struct {
 	Name           string          `gorm:"primary_key" json:"name"`
 	Token          string          `json:"token"`
-	RandomID       string          `json:"randomID"`
+	UserID         string          `json:"userID"`
 	UserCharacters []UserCharacter `json:"userCharacters"`
 }
