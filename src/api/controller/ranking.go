@@ -31,7 +31,6 @@ func TotalRanking(c *gin.Context) {
 		user_total_value["name"] = user.Name
 		ranking = append(ranking, user_total_value)
 	}
-
 	//  total_valueでソートしてJSONで返す
 
 }
