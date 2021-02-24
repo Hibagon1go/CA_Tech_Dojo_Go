@@ -1,4 +1,4 @@
-// character関連の機能
+// キャラクター関連の機能
 
 package controller
 
@@ -63,7 +63,7 @@ func Character_List(c *gin.Context) {
 	db := database.DBConnect()
 	is_Auth, user := middleware.Authorization(c) // まず認証を実行
 	if is_Auth {
-		// userに属する所持character情報を全て取り出す
+		// userの所持キャラクター情報を全て取り出す
 		character_lists := []map[string]string{}
 		var user_characters []model.UserCharacter
 		db.Find(&user_characters, "user_id=?", user.UserID)

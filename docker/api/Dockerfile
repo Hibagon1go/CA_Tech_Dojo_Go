@@ -12,6 +12,7 @@ RUN go env -w GO111MODULE=on \
   && go env -w GOSUMDB=off 
 # $GOPATHの外で開発できるように設定
 # $golang.orgに辿り着けるように設定
+# (よく理解しているわけではない)
 
 RUN go get -u github.com/gin-gonic/gin \ 
   && go get github.com/jinzhu/gorm \

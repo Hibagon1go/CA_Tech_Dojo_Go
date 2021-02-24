@@ -6,7 +6,7 @@ done
 
 echo "app is starting...!"
 if [ ! -e "go.mod" ]; then
-  exec go mod init # go.modファイルが無ければgo.modファイルを作成し、初期化
+  exec go mod init # go.modファイルが無ければそれを作成し、初期化
 fi
 
 exec go run main.go

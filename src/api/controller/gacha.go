@@ -18,31 +18,31 @@ type Times struct {
 	Times int `json:"times"`
 }
 
+// キャラクターの抽選を行い、ユーザーの所持キャラクター情報に保存
 func Do_Gacha(c *gin.Context) {
 	db := database.DBConnect()
-	rand.Seed(time.Now().UnixNano())
 	is_Auth, user := middleware.Authorization(c) // まず認証を実行
 	var times Times
 	if is_Auth {
-		// 何回ガチャを引くかの変数であるtimesを取得
+		// c.ShouldBindJSON(&times)で、POSTされたJSONをtimesにキャスト
 		if err := c.ShouldBindJSON(&times); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 	}
 
-	// user_characters := user.UserCharacters
 	results := []map[string]string{}
-	for i := 0; i < times.Times; i++ {
-		picked_character := PickupCharacter() // characterを抽選
+	rand.Seed(time.Now().UnixNano())
+	for i := 0; i < times.Times; i++ { // times回抽選を実行
+		picked_character := PickupCharacter() // キャラクターを抽選
 
 		result := map[string]string{"characterID": "", "name": ""} // response用のマップ
 		result["characterID"] = picked_character.CharacterID
 		result["name"] = picked_character.CharacterName
 
 		var user_character model.UserCharacter
+		// 抽選されたキャラクター情報をuserの所持キャラクターテーブルに保存
 		user_character.UserID = user.UserID
-		// 抽選されたcharacter情報をuserの所持characterテーブルに保存
 		user_character.CharacterName = picked_character.CharacterName
 		user_character.UserCharacterID = strconv.Itoa(rand.Intn(100000000)) // db内でユニークなID生成したいが、桁数の大きいrandom数で代用
 		user_character.CharacterID = picked_character.CharacterID
@@ -56,14 +56,14 @@ func Do_Gacha(c *gin.Context) {
 	return
 }
 
-// characterを抽選
+// キャラクターを抽選
 func PickupCharacter() (picked_character model.Character) {
 	db := database.DBConnect()
 	box := CharacterBox()
 	rand.Seed(time.Now().UnixNano())
 	characterID := box[rand.Intn(100)]
 	db.First(&picked_character, "character_id=?", characterID)
-	picked_character.Value = rand.Intn(10000) // 抽選されたcharacterにランダムで"価値"を付与
+	picked_character.Value = rand.Intn(10000) // 抽選されたキャラクターにランダムで"価値"を付与
 
 	return picked_character
 }

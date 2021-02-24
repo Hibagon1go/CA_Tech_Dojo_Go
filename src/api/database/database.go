@@ -9,7 +9,7 @@ import (
 	"github.com/jinzhu/gorm"
 )
 
-// dbにテーブルが無い時は自動生成し、dbを返す
+// dbにテーブルを自動生成し、dbを返す
 func DBMigrate(db *gorm.DB) *gorm.DB {
 	db.AutoMigrate(&model.User{})
 	db.AutoMigrate(&model.UserCharacter{})

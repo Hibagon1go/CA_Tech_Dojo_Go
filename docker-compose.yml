@@ -23,7 +23,6 @@ services:
       - "3306:3306"
     volumes:
       - ./docker/db/conf.d:/etc/mysql/conf.d
-      - ./log/mysql:/var/log/mysql
     networks: 
       - my_network
   swagger:
@@ -35,6 +34,7 @@ services:
     networks: 
       - my_network
 
+# 同じnetworksに属するコンテナ間は認識できて通信可能に
 networks:
   my_network:
 

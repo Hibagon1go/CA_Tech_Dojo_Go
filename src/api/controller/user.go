@@ -14,6 +14,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+// ユーザーを新規作成
 func CreateUser(c *gin.Context) {
 	db := database.DBConnect()
 	var user model.User                // POSTされたユーザー情報を入れる構造体
@@ -32,11 +33,12 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
+	// 各ユーザーに固有の情報を追加
 	userID, err := MakeRandomStr(32)
 	if err != nil {
 		log.Fatal(err)
 	}
-	user.UserID = userID // 各ユーザーに固有のランダムな文字列をuserの情報に追加
+	user.UserID = userID
 
 	token := middleware.CreateToken(user)
 	user.Token = token
@@ -52,8 +54,9 @@ func CreateUser(c *gin.Context) {
 
 }
 
+// ユーザー情報を取得
 func GetUser(c *gin.Context) {
-	is_Auth, user := middleware.Authorization(c)
+	is_Auth, user := middleware.Authorization(c) // 認証を実行
 	if is_Auth {
 		c.JSON(http.StatusOK, gin.H{
 			"name": user.Name,
@@ -61,6 +64,7 @@ func GetUser(c *gin.Context) {
 	}
 }
 
+// ユーザー情報を変更
 func UpdateUser(c *gin.Context) {
 	db := database.DBConnect()
 	is_Auth, before_user := middleware.Authorization(c) // まず認証を実行

@@ -1,3 +1,4 @@
+// まずこれが実行される
 package main
 
 import (
@@ -34,6 +35,13 @@ func main() {
 		// controllerへリクエストを振る
 		characterEngine.GET("/list", controller.Character_List)
 
+	}
+
+	rankingEngine := engine.Group("/ranking")
+	{
+		// controllerへリクエストを振る
+		rankingEngine.GET("/sum", controller.TotalRanking)
+		rankingEngine.GET("/max", controller.MaxRanking)
 	}
 
 	engine.Run(":8080") // localhost:8080でサーバー走らせる

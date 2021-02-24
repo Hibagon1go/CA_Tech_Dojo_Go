@@ -7,7 +7,7 @@ info:
   ローカル環境で起動中のAPIにAPIリクエストをするこ とができます。"
   version: "1.0.0"
   title: "TechTrain MISSION Game API"
-host: "8080:api"
+host: "8080:api" # ここをうまくいじるとちゃんとSwagger上でHTTPrequestを送れる(今はうまくいってない)
 tags:
   - name: "user"
     description: "ユーザ関連API"
