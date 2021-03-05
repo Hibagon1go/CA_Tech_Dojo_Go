@@ -37,7 +37,7 @@
 例) {"characters" : [{"userCharacterID":"...","characterID":"...","name":"violin"},{"userCharacterID":"...","characterID":"...","name":"contrabass"}]}
 
 ## 展望
-- Dockerを用いたSwaggerをうまく起動できていない
+- Dockerを用いたSwaggerをうまく起動できていない(docker-compose.ymlとswaggerのhostをいじる、あとはミドルウェアを使用、"github.com/gin-contrib/cors"を参考に)
 - ガチャを実行する際のアルゴリズム
 - ガチャ実行時に引いたキャラクター(今回は楽器)の強さ(今回は楽器の価値)を付与していて、それを使ってさらなる機能追加
 - トークンの作成方法の改善
