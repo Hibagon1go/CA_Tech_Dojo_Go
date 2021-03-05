@@ -25,13 +25,16 @@ services:
       - ./docker/db/conf.d:/etc/mysql/conf.d
     networks: 
       - my_network
-  swagger:
+swagger:
     image: swaggerapi/swagger-editor
     environment:
-      API_URL: ./docker/swagger/swagger-editor.yml
+      #API_URL: ./docker/swagger/swagger-editor.yml
+      SWAGGER_FILE: /data/swagger-editor.yml
     ports:
       - "8081:8080"
-    networks: 
+    volumes:
+      - ./docker/swagger:/data
+    networks:
       - my_network
 
 # 同じnetworksに属するコンテナ間は認識できて通信可能に
